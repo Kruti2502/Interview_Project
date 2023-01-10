@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search cities</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="search-box-container">
+      <input
+        class="input-field search-field"
+        type="search"
+        name="searchterm"
+        placeholder="Search places"
+      />
+      <button class="btn search-btn">Search</button>
+    </div>
+
+    <div class="result-table-container"></div>
+
+    <div class="fields-checkbox-container">
+      <input
+        type="checkbox"
+        class="checkbox"
+        name="id"
+        value="id"
+        disabled="disabled"
+        checked="checked"
+      />
+      <label for="id">Id</label>
+
+      <input
+        type="checkbox"
+        class="checkbox"
+        name="name"
+        value="name"
+        disabled="disabled"
+        checked="checked"
+      />
+      <label for="name">Name</label>
+
+      <input
+        type="checkbox"
+        class="checkbox"
+        name="country"
+        value="country"
+        disabled="disabled"
+        checked="checked"
+      />
+      <label for="country">Country</label>
+
+      <input
+        type="checkbox"
+        class="checkbox"
+        name="population"
+        value="population"
+      />
+      <label for="population">Population</label>
+
+      <input type="checkbox" class="checkbox" name="region" value="region" />
+      <label for="id">Region</label>
+    </div>
+
+    <div class="pagination-container">
+      <div class="pagination-result-container">
+        <button class="btn prev-page-btn">Previous</button>
+        <span class="page-info"></span>
+        <button class="btn next-page-btn">Next</button>
+      </div>
+
+      <div class="limit-input-container">
+        <label for="limit-input">Number of cities per page:</label>
+        <input
+          class="input-field number-field"
+          type="number"
+          name="limit"
+          id="limit-input"
+          value="5"
+        />
+        <p class="limit-input-error"></p>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

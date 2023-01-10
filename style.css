@@ -1,0 +1,187 @@
+:root {
+  --teal: #009879;
+  --light-teal: #00987aa3;
+  --white: #ffffff;
+  --very-light-gray: #f3f3f3;
+  --light-gray: #dddddd;
+  --medium-gray: #cccccc;
+  --error-red: #980f00;
+}
+
+html {
+  font-size: 16px;
+  color: rgb(33, 37, 41);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+body {
+  margin: 24px;
+}
+
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 315px;
+  padding: 24px 0;
+  transition: opacity 0.75s, visibility 0.75s;
+}
+
+.loader::after {
+  content: "";
+  width: 25px;
+  height: 25px;
+  border: 5px solid #dddddd;
+  border-top-color: #009578;
+  border-radius: 50%;
+  animation: loading 0.75s ease infinite;
+}
+
+@keyframes loading {
+  from {
+    transform: rotate(0turn);
+  }
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.btn {
+  background-color: var(--teal);
+  border: none;
+  border-radius: 5px;
+  color: var(--white);
+}
+
+.input-field {
+  background-color: var(--white);
+  border: 2px solid var(--medium-gray);
+  border-radius: 5px;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--teal);
+}
+
+.search-box-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-field {
+  width: 241px;
+  height: 38px;
+  font-size: 16px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 12px;
+  background-image: url("./assests/ctrl.png");
+  background-position: 95%;
+  background-repeat: no-repeat;
+}
+
+.search-field:focus {
+  background-image: none;
+}
+
+.search-field::-webkit-search-cancel-button {
+  display: none;
+}
+
+.search-btn {
+  height: 38px;
+  border-color: rgb(206, 212, 218);
+  padding: 6px 12px;
+}
+
+.fields-checkbox-container {
+  display: none;
+}
+
+.places-data-table {
+  border-collapse: collapse;
+  border: none;
+  margin: 25px 0;
+  font-size: 0.9em;
+  min-width: 400px;
+  border-radius: 5px 5px 0 0;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.places-data-table thead tr {
+  background-color: #009879;
+  color: var(--white);
+  text-align: left;
+  font-weight: bold;
+}
+
+.places-data-table th,
+.places-data-table td {
+  padding: 12px 15px;
+}
+
+.places-data-table tbody tr {
+  border-bottom: 1px solid var(--light-gray);
+}
+
+.places-data-table tbody tr:nth-of-type(even) {
+  background-color: var(--very-light-gray);
+}
+
+.places-data-table tbody tr:last-of-type {
+  border-bottom: 2px solid #009879;
+}
+
+.places-data-table tbody tr.active-row {
+  font-weight: bold;
+  color: #009879;
+}
+
+.country-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.country-name-row img {
+  height: 12px;
+  width: 12px;
+}
+
+.pagination-container {
+  display: none;
+  height: 32px;
+  gap: 32px;
+  align-items: center;
+  margin: 12px 0px;
+}
+
+.pagination-container .btn {
+  padding: 4px 12px;
+}
+
+.pagination-result-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.limit-input-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.number-field {
+  padding: 6px 8px;
+}
+
+.limit-input-error {
+  color: var(--error-red);
+  font-weight: bold;
+}
