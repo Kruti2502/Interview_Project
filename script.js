@@ -1,12 +1,16 @@
-const options = {
+let API_RESULTS_LIMIT = 5;
+let OFFSET = 0;
+let CURRENT_PAGE = 1;
+const CITY_GET_URL = "https://wft-geo-db.p.rapidapi.com/v1/geo/cities";
+const COUNTRY_FLAG_GET_URL = "https://www.countryflagsapi.com/png";
+const FETCH_OPTIONS = {
   method: "GET",
   headers: {
     "X-RapidAPI-Key": "4ac5e3352fmshe6ac515ca3b8ccap1f0045jsnf0a504a87bbe",
     "X-RapidAPI-Host": "wft-geo-db.p.rapidapi.com",
   },
 };
-
-const tableFieldsMap = {
+const PLACES_TABLE_FIELDS_MAP = {
   id: {
     heading: "#",
     getHtml: function (element, index) {
@@ -24,7 +28,7 @@ const tableFieldsMap = {
     getHtml: function (element, index) {
       return `
       <td class="country-name-row">
-      <img crossorigin="anonymous" src=https://www.countryflagsapi.com/png/${element.countryCode.toLowerCase()} />
+      <img crossorigin="anonymous" src="${COUNTRY_FLAG_GET_URL}/${element.countryCode.toLowerCase()}" />
       ${element.country}
       </td>`;
     },
@@ -45,17 +49,12 @@ const tableFieldsMap = {
 
 const checkedTableFields = ["id", "name", "country"];
 let places_results;
-
-let APILimit = 5;
-let offset = 0;
-
-let currPage = 1;
 let totalPage;
 
-const searchField = document.querySelector(".search-field");
+const searchPlacesInput = document.querySelector(".search-field");
 const searchBtn = document.querySelector(".search-btn");
 
-const resultTableContainer = document.querySelector(".result-table-container");
+const placesTableContainer = document.querySelector(".places-table-container");
 const fieldCheckboxesContainer = document.querySelector(
   ".fields-checkbox-container"
 );
@@ -65,91 +64,22 @@ const pageInfo = document.querySelector(".page-info");
 const paginationResultContainer = document.querySelector(
   ".pagination-result-container"
 );
-const prevPageBtn = document.querySelector(".prev-page-btn");
+const prevPageBtn = document.querySelector(".previous-page-btn");
 const nextPageBtn = document.querySelector(".next-page-btn");
 
-const limitInput = document.querySelector("#limit-input");
-const limitInputError = document.querySelector(".limit-input-error");
+const resultsLimitInput = document.querySelector("#results-limit-input");
+const resultsLimitInputError = document.querySelector(
+  ".results-limit-input-error"
+);
 
-const getCheckboxesHTML = function () {
-  let html = "";
-
-  for (field of TABLE_FIELDS) {
-    html += `
-    <input type="checkbox" class="checkbox" name="${field}" value="${field}" ${
-      DEFAULT_TABLE_FIELDS.includes(field)
-        ? 'disabled="disabled" checked="checked"'
-        : ""
-    }/>
-    <label for="${field}">
-    ${field.charAt(0).toUpperCase() + field.slice(1)}</label>
-    `;
-  }
-
-  return html;
-};
-
-const showSearchResult = function (emptySearch, resultData) {
-  console.log(resultData);
-  if (emptySearch) {
-    resultTableContainer.innerHTML = "<p>Start searching..</p>";
-    paginationContainer.style.display = "none";
-    return;
-  }
-
-  if (resultData.error) {
-    resultTableContainer.innerHTML = `<p>${resultData.error}</p>`;
-    paginationContainer.style.display = "none";
-    return;
-  }
-
-  if (resultData.data?.length === 0) {
-    resultTableContainer.innerHTML = `<p>No results found</p>`;
-    paginationContainer.style.display = "none";
-    return;
-  }
-
-  let resultRows = "";
-  if (!resultData.data) {
-    resultTableContainer.innerHTML = `<p>Something went wrong</p>`;
-    paginationContainer.style.display = "none";
-    return;
-  }
-
-  resultData.data.forEach((element, index) => {
-    resultRows += `
-    <tr>
-      ${checkedTableFields.map((field) => {
-        return tableFieldsMap[`${field}`].getHtml(element, index);
-      })}
-    </tr>
-    `;
-  });
-
-  resultTableContainer.innerHTML = `<table class="places-data-table">
-    <thead>
-    ${checkedTableFields.map((field) => {
-      return `<th>${tableFieldsMap[`${field}`].heading}</th>`;
-    })}
-    </thead>
-    <tbody>
-      ${resultRows}
-    </tbody>
-  </table>
-  `;
-
-  fieldCheckboxesContainer.style.display = "block";
-  paginationContainer.style.display = "flex";
-
-  totalPage = Math.ceil(+resultData.metadata.totalCount / APILimit);
-
-  if (currPage === 1 && totalPage === 1) {
+const updatePaginationUI = function () {
+  if (CURRENT_PAGE === 1 && totalPage === 1) {
     prevPageBtn.style.display = "none";
     nextPageBtn.style.display = "none";
-  } else if (currPage === 1) {
+  } else if (CURRENT_PAGE === 1) {
     prevPageBtn.style.display = "none";
     nextPageBtn.style.display = "block";
-  } else if (currPage === totalPage) {
+  } else if (CURRENT_PAGE === totalPage) {
     nextPageBtn.style.display = "none";
     prevPageBtn.style.display = "block";
   } else {
@@ -157,84 +87,90 @@ const showSearchResult = function (emptySearch, resultData) {
     nextPageBtn.style.display = "block";
   }
 
-  pageInfo.innerHTML = `
-  <p>Page ${currPage} of ${totalPage}</p>
-  `;
+  pageInfo.innerHTML = `<p>Page ${CURRENT_PAGE} / ${totalPage}</p>`;
 };
 
-const onLimitChange = async function () {
-  const limit = limitInput.value;
-  if (limit < 5 || limit > 10) {
-    limitInputError.innerHTML = "Limit can not be less than 5 or more than 10";
-    limitInputError.style.display = "block";
-    limitInput.value = limit < 5 ? 5 : 10;
+const renderPlacesTable = function (emptySearch, placesData) {
+  if (emptySearch) {
+    placesTableContainer.innerHTML = "<p>Start searching...</p>";
+    paginationContainer.style.display = "none";
     return;
   }
 
-  limitInputError.style.display = "none";
-  APILimit = limit;
-  offset = 0;
-  currPage = 1;
-  searchFunc();
-};
-
-const onChangePage = async function (e) {
-  const page = e.target.classList;
-  if (page.contains("prev-page-btn")) {
-    currPage -= 1;
-    if (currPage <= 0) {
-      currPage = 0;
-    }
-    offset = (currPage - 1) * APILimit;
+  if (placesData.error) {
+    placesTableContainer.innerHTML = `<p>${placesData.error}</p>`;
+    paginationContainer.style.display = "none";
+    return;
   }
 
-  if (page.contains("next-page-btn")) {
-    currPage += 1;
-    if (currPage > totalPage) {
-      currPage = totalPage;
-    }
-    offset = (currPage - 1) * APILimit;
+  if (placesData.data?.length === 0) {
+    placesTableContainer.innerHTML = `<p class="error-msg">No results found.</p>`;
+    paginationContainer.style.display = "none";
+    return;
   }
 
-  await searchFunc();
+  if (!placesData.data) {
+    placesTableContainer.innerHTML = `<p>Something went wrong</p>`;
+    paginationContainer.style.display = "none";
+    return;
+  }
+
+  let resultRows = "";
+
+  placesData.data.forEach((element, index) => {
+    resultRows += `<tr>
+      ${checkedTableFields.reduce((rowString, field) => {
+        return (
+          rowString +
+          PLACES_TABLE_FIELDS_MAP[`${field}`].getHtml(element, index)
+        );
+      }, "")}
+    </tr>`;
+  });
+
+  placesTableContainer.innerHTML = `
+    <table class="places-data-table">
+      <thead>
+      ${checkedTableFields.reduce((headerString, field) => {
+        return (
+          headerString +
+          `<th>${PLACES_TABLE_FIELDS_MAP[`${field}`].heading}</th>`
+        );
+      }, "")}
+      </thead>
+      <tbody>
+        ${resultRows}
+      </tbody>
+    </table>`;
+
+  fieldCheckboxesContainer.style.display = "flex";
+  paginationContainer.style.display = "flex";
+
+  totalPage = Math.ceil(+placesData.metadata.totalCount / API_RESULTS_LIMIT);
+
+  updatePaginationUI();
 };
 
-const searchFunc = async function () {
-  const searchValue = searchField.value;
+const searchPlaces = async function () {
+  const searchValue = searchPlacesInput.value;
 
   if (!searchValue) {
-    showSearchResult(true);
+    renderPlacesTable(true);
     return;
   }
 
-  const searchUrl = `https://wft-geo-db.p.rapidapi.com/v1/geo/cities?namePrefix=${searchValue}&limit=${APILimit}&offset=${offset}`;
+  const url = `${CITY_GET_URL}?namePrefix=${searchValue}&limit=${API_RESULTS_LIMIT}&OFFSET=${OFFSET}`;
 
   try {
-    resultTableContainer.innerHTML = `<div class="loader"></div>`;
+    placesTableContainer.innerHTML = `<div class="loader"></div>`;
+    fieldCheckboxesContainer.style.display = "none";
 
-    let response = await fetch(searchUrl, options);
+    let response = await fetch(url, FETCH_OPTIONS);
     places_results = await response.json();
-    showSearchResult(false, places_results);
+
+    renderPlacesTable(false, places_results);
   } catch (error) {
-    showSearchResult(false, { error: error.message });
-  }
-};
-
-const clearResults = function () {
-  resultTableContainer.innerHTML = "";
-  fieldCheckboxesContainer.style.display = "none";
-  paginationContainer.style.display = "none";
-};
-
-const searchOnKeyPress = async function (e) {
-  if (e.key === "Enter") {
-    await searchFunc();
-  }
-};
-
-const searchInputFieldFocus = function (e) {
-  if (e.ctrlKey && e.key === "/") {
-    searchField.focus();
+    renderPlacesTable(false, { error: error.message });
   }
 };
 
@@ -256,13 +192,80 @@ const toggleTableFields = function (event) {
     }
   }
 
-  showSearchResult(false, places_results);
+  renderPlacesTable(false, places_results);
 };
 
-searchBtn.addEventListener("click", searchFunc);
+const onAPIResultsLimitChange = async function () {
+  const resultsLimit = resultsLimitInput.value;
+
+  if (resultsLimit < 5 || resultsLimit > 10) {
+    resultsLimitInputError.innerHTML =
+      "Results per page can not be less than 5 or more than 10";
+    resultsLimitInputError.style.display = "block";
+    resultsLimitInput.value = resultsLimit < 5 ? 5 : 10;
+    return;
+  }
+
+  resultsLimitInputError.style.display = "none";
+
+  API_RESULTS_LIMIT = resultsLimit;
+  OFFSET = 0;
+  CURRENT_PAGE = 1;
+
+  searchPlaces();
+};
+
+const onPageChange = async function (e) {
+  const pagesContainer = e.target.classList;
+
+  if (pagesContainer.contains("previous-page-btn")) {
+    CURRENT_PAGE -= 1;
+    if (CURRENT_PAGE <= 0) {
+      CURRENT_PAGE = 0;
+    }
+    OFFSET = (CURRENT_PAGE - 1) * API_RESULTS_LIMIT;
+  }
+
+  if (pagesContainer.contains("next-page-btn")) {
+    CURRENT_PAGE += 1;
+    if (CURRENT_PAGE > totalPage) {
+      CURRENT_PAGE = totalPage;
+    }
+    OFFSET = (CURRENT_PAGE - 1) * API_RESULTS_LIMIT;
+  }
+
+  await searchPlaces();
+};
+
+const flushSerchResults = function () {
+  OFFSET = 0;
+  CURRENT_PAGE = 1;
+  totalPage = 0;
+  API_RESULTS_LIMIT = 5;
+
+  resultsLimitInput.value = API_RESULTS_LIMIT;
+  placesTableContainer.innerHTML = "";
+  fieldCheckboxesContainer.style.display = "none";
+  paginationContainer.style.display = "none";
+};
+
+const searchOnKeyPress = async function (e) {
+  if (e.key === "Enter") {
+    await searchPlaces();
+  }
+};
+
+const searchInputFieldFocus = function (e) {
+  if (e.ctrlKey && e.key === "/") {
+    searchPlacesInput.focus();
+  }
+};
+
+searchPlacesInput.addEventListener("keypress", searchOnKeyPress);
+searchPlacesInput.addEventListener("input", flushSerchResults);
+searchBtn.addEventListener("click", searchPlaces);
 fieldCheckboxesContainer.addEventListener("click", toggleTableFields);
-limitInput.addEventListener("change", onLimitChange);
-paginationResultContainer.addEventListener("click", onChangePage);
-searchField.addEventListener("input", clearResults);
-searchField.addEventListener("keypress", searchOnKeyPress);
+paginationResultContainer.addEventListener("click", onPageChange);
+resultsLimitInput.addEventListener("change", onAPIResultsLimitChange);
+
 document.body.addEventListener("keydown", searchInputFieldFocus);

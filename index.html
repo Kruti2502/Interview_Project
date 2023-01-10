@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Search cities</title>
+    <title>Search Places</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -12,74 +12,79 @@
       <input
         class="input-field search-field"
         type="search"
-        name="searchterm"
-        placeholder="Search places"
+        name="places"
+        placeholder="Search places..."
       />
       <button class="btn search-btn">Search</button>
     </div>
 
-    <div class="result-table-container"></div>
+    <div class="places-table-container"></div>
 
     <div class="fields-checkbox-container">
-      <input
-        type="checkbox"
-        class="checkbox"
-        name="id"
-        value="id"
-        disabled="disabled"
-        checked="checked"
-      />
-      <label for="id">Id</label>
-
-      <input
-        type="checkbox"
-        class="checkbox"
-        name="name"
-        value="name"
-        disabled="disabled"
-        checked="checked"
-      />
-      <label for="name">Name</label>
-
-      <input
-        type="checkbox"
-        class="checkbox"
-        name="country"
-        value="country"
-        disabled="disabled"
-        checked="checked"
-      />
-      <label for="country">Country</label>
-
-      <input
-        type="checkbox"
-        class="checkbox"
-        name="population"
-        value="population"
-      />
-      <label for="population">Population</label>
-
-      <input type="checkbox" class="checkbox" name="region" value="region" />
-      <label for="id">Region</label>
+      <span>
+        <input
+          type="checkbox"
+          class="checkbox"
+          name="id"
+          value="id"
+          disabled="disabled"
+          checked="checked"
+        />
+        <label for="id">Id</label>
+      </span>
+      <span>
+        <input
+          type="checkbox"
+          class="checkbox"
+          name="name"
+          value="name"
+          disabled="disabled"
+          checked="checked"
+        />
+        <label for="name">Name</label>
+      </span>
+      <span>
+        <input
+          type="checkbox"
+          class="checkbox"
+          name="country"
+          value="country"
+          disabled="disabled"
+          checked="checked"
+        />
+        <label for="country">Country</label>
+      </span>
+      <span>
+        <input
+          type="checkbox"
+          class="checkbox"
+          name="population"
+          value="population"
+        />
+        <label for="population">Population</label>
+      </span>
+      <span>
+        <input type="checkbox" class="checkbox" name="region" value="region" />
+        <label for="id">Region</label>
+      </span>
     </div>
 
     <div class="pagination-container">
       <div class="pagination-result-container">
-        <button class="btn prev-page-btn">Previous</button>
+        <button class="btn previous-page-btn">Previous</button>
         <span class="page-info"></span>
         <button class="btn next-page-btn">Next</button>
       </div>
-
-      <div class="limit-input-container">
-        <label for="limit-input">Number of cities per page:</label>
+      <div class="results-limit-input-container">
+        <label for="results-limit-input">Number of places per page:</label>
         <input
-          class="input-field number-field"
+          class="input-field results-limit-field"
           type="number"
           name="limit"
-          id="limit-input"
+          id="results-limit-input"
           value="5"
         />
-        <p class="limit-input-error"></p>
+        <p class="error-msg"></p>
       </div>
     </div>
 

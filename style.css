@@ -6,11 +6,12 @@
   --light-gray: #dddddd;
   --medium-gray: #cccccc;
   --error-red: #980f00;
+  --main-black-font: #212529;
 }
 
 html {
   font-size: 16px;
-  color: rgb(33, 37, 41);
+  color: var(--main-black-font);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
     Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -33,8 +34,8 @@ body {
   content: "";
   width: 25px;
   height: 25px;
-  border: 5px solid #dddddd;
-  border-top-color: #009578;
+  border: 5px solid var(--medium-gray);
+  border-top-color: var(--teal);
   border-radius: 50%;
   animation: loading 0.75s ease infinite;
 }
@@ -79,13 +80,9 @@ body {
   padding-top: 6px;
   padding-bottom: 6px;
   padding-left: 12px;
-  background-image: url("./assests/ctrl.png");
+  background-image: url("./assests/ctrlShortcut.png");
   background-position: 95%;
   background-repeat: no-repeat;
-}
-
-.search-field:focus {
-  background-image: none;
 }
 
 .search-field::-webkit-search-cancel-button {
@@ -94,18 +91,16 @@ body {
 
 .search-btn {
   height: 38px;
-  border-color: rgb(206, 212, 218);
   padding: 6px 12px;
 }
 
-.fields-checkbox-container {
-  display: none;
+.places-table-container {
+  padding-top: 25px;
 }
 
 .places-data-table {
   border-collapse: collapse;
   border: none;
-  margin: 25px 0;
   font-size: 0.9em;
   min-width: 400px;
   border-radius: 5px 5px 0 0;
@@ -114,7 +109,7 @@ body {
 }
 
 .places-data-table thead tr {
-  background-color: #009879;
+  background-color: var(--teal);
   color: var(--white);
   text-align: left;
   font-weight: bold;
@@ -134,12 +129,12 @@ body {
 }
 
 .places-data-table tbody tr:last-of-type {
-  border-bottom: 2px solid #009879;
+  border-bottom: 2px solid var(--teal);
 }
 
 .places-data-table tbody tr.active-row {
   font-weight: bold;
-  color: #009879;
+  color: var(--teal);
 }
 
 .country-name-row {
@@ -153,11 +148,18 @@ body {
   width: 12px;
 }
 
+.fields-checkbox-container {
+  display: none;
+  gap: 15px;
+  margin-top: 15px;
+  margin-bottom: 40px;
+}
+
 .pagination-container {
   display: none;
-  height: 32px;
-  gap: 32px;
+  height: 36px;
   align-items: center;
+  gap: 36px;
   margin: 12px 0px;
 }
 
@@ -171,17 +173,18 @@ body {
   align-items: center;
 }
 
-.limit-input-container {
+.results-limit-input-container {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.number-field {
+.results-limit-field {
+  width: 30px;
   padding: 6px 8px;
 }
 
-.limit-input-error {
+.error-msg {
   color: var(--error-red);
   font-weight: bold;
 }
