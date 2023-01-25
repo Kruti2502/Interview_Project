@@ -98,7 +98,7 @@ const renderPlacesTable = function (emptySearch, placesData) {
   }
 
   if (placesData.error) {
-    placesTableContainer.innerHTML = `<p>${placesData.error}</p>`;
+    placesTableContainer.innerHTML = `<p class="error-msg">${placesData.error}.</p>`;
     paginationContainer.style.display = "none";
     return;
   }
@@ -110,7 +110,7 @@ const renderPlacesTable = function (emptySearch, placesData) {
   }
 
   if (!placesData.data) {
-    placesTableContainer.innerHTML = `<p>Something went wrong</p>`;
+    placesTableContainer.innerHTML = `<p class="error-msg">Something went wrong.</p>`;
     paginationContainer.style.display = "none";
     return;
   }
