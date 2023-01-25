@@ -69,7 +69,7 @@ const nextPageBtn = document.querySelector(".next-page-btn");
 
 const resultsLimitInput = document.querySelector("#results-limit-input");
 const resultsLimitInputError = document.querySelector(
-  ".results-limit-input-error"
+  ".error-msg"
 );
 
 const updatePaginationUI = function () {
@@ -122,7 +122,7 @@ const renderPlacesTable = function (emptySearch, placesData) {
       ${checkedTableFields.reduce((rowString, field) => {
         return (
           rowString +
-          PLACES_TABLE_FIELDS_MAP[`${field}`].getHtml(element, index)
+          PLACES_TABLE_FIELDS_MAP[field].getHtml(element, index)
         );
       }, "")}
     </tr>`;
@@ -134,7 +134,7 @@ const renderPlacesTable = function (emptySearch, placesData) {
       ${checkedTableFields.reduce((headerString, field) => {
         return (
           headerString +
-          `<th>${PLACES_TABLE_FIELDS_MAP[`${field}`].heading}</th>`
+          `<th>${PLACES_TABLE_FIELDS_MAP[field].heading}</th>`
         );
       }, "")}
       </thead>
@@ -159,7 +159,7 @@ const searchPlaces = async function () {
     return;
   }
 
-  const url = `${CITY_GET_URL}?namePrefix=${searchValue}&limit=${API_RESULTS_LIMIT}&OFFSET=${OFFSET}`;
+  const url = `${CITY_GET_URL}?namePrefix=${searchValue}&limit=${API_RESULTS_LIMIT}&offset=${OFFSET}`;
 
   try {
     placesTableContainer.innerHTML = `<div class="loader"></div>`;
@@ -212,7 +212,7 @@ const onAPIResultsLimitChange = async function () {
   OFFSET = 0;
   CURRENT_PAGE = 1;
 
-  searchPlaces();
+  await searchPlaces();
 };
 
 const onPageChange = async function (e) {
